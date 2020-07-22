@@ -2,15 +2,14 @@
 namespace application\controllers;
 
 use Yii;
-use yii\base\InvalidArgumentException;
 use yii\web\BadRequestHttpException;
 use yii\web\Response;
 use yii\web\Controller;
-use yii\filters\VerbFilter;
-use yii\filters\AccessControl;
 use yii\bootstrap4\ActiveForm;
 use application\models\LoginForm;
 use application\models\SignupForm;
+use admin\models\PageModel;
+use admin\models\LibraryModel;
 
 /**
  * Class SiteController
@@ -18,37 +17,6 @@ use application\models\SignupForm;
  */
 class SiteController extends Controller
 {
-	/**
-	 * @return array
-	 */
-/*    public function behaviors()
-    {
-        return [
-            'access' => [
-                'class' => AccessControl::className(),
-                'only' => ['logout', 'signup'],
-                'rules' => [
-                    [
-                        'actions' => ['signup'],
-                        'allow' => true,
-                        'roles' => ['?'],
-                    ],
-                    [
-                        'actions' => ['logout'],
-                        'allow' => true,
-                        'roles' => ['@'],
-                    ],
-                ],
-            ],
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'logout' => ['post'],
-                ],
-            ],
-        ];
-    }
-*/
 	/**
 	 * @return string
 	 */
@@ -68,7 +36,24 @@ class SiteController extends Controller
     {
         return $this->render('index');
     }
-    
+	
+	/**
+	 * @param null $page
+	 * @return string
+	 * @throws BadRequestHttpException
+	 */
+    public function actionLibrarys($page = null)
+    {
+	    $get = yii::$app->request->get();
+	    $getModel = new PageModel();
+	    $model = new LibraryModel(['scenario' => LibraryModel::SCENARIO_READ_LIBRARYS]);
+	    if($getModel->load(['page' => $get['page']], '') && $getModel->validate()){
+		    $provider = $model->readLibrarys();
+		    return $this->render('librarys', compact('model', 'provider'));
+	    }else{
+		    throw new BadRequestHttpException('Ошибка запроса!');
+	    }
+    }
 	/**
 	 * @return \yii\web\Response
 	 */
@@ -120,6 +105,9 @@ class SiteController extends Controller
 	    return $this->render('signup', compact('model'));
     }
 	
+	/**
+	 * @return array|string
+	 */
 	public function actionResponseSignup()
 	{
 		if(yii::$app->request->isAjax){
@@ -134,6 +122,9 @@ class SiteController extends Controller
 		return $this->returnException();
 	}
 	
+	/**
+	 * @return string|Response
+	 */
 	public function actionProfile()
 	{
 		if (Yii::$app->user->isGuest) {
@@ -141,7 +132,10 @@ class SiteController extends Controller
 		}
 		return $this->render('profile');
 	}
-    
+	
+	/**
+	 * @return array
+	 */
     public function actionValidate()
     {
 	    $post = Yii::$app->request->post();
@@ -160,6 +154,9 @@ class SiteController extends Controller
 	    }
     }
 	
+	/**
+	 * @return string
+	 */
 	public function returnException()
 	{
 		$exception = Yii::$app->errorHandler->exception;

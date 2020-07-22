@@ -55,16 +55,8 @@ if(!yii::$app->user->isGuest){
 		],
 		'items' => [
 			[
-				'label' => 'Книги',
-				'url' => ['/book']
-			],
-			[
-				'label' => 'Авторы',
-				'url' => ['/author']
-			],
-			[
 				'label' => 'Библиотека',
-				'url' => ['/library']
+				'url' => ['/librarys']
 			],
 			[
 				'label' => 'Документация',

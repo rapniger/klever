@@ -39,6 +39,7 @@ class SiteController extends Controller
 	 * @return string|Response
 	 * @throws BadRequestHttpException
 	 * @throws NotFoundHttpException
+	 * @throws \yii\base\InvalidConfigException
 	 */
     public function actionBook($slug)
     {
@@ -50,7 +51,7 @@ class SiteController extends Controller
 		    $addModel = new BookModel(['scenario' => BookModel::SCENARIO_ADD_FORM]);
 		    $updateModel = new BookModel(['scenario' => BookModel::SCENARIO_UPDATE_FORM]);
 		    if($updateModel->load(['slug' => $slug], '')){
-			    $book = $updateModel->findBook();
+			    $book = $updateModel->readBook();
 			    if(empty($book)){
 				    throw new NotFoundHttpException('Страница не найдена!');
 			    }
@@ -69,7 +70,7 @@ class SiteController extends Controller
 	    $getModel = new PageModel();
 	    $model = new BookModel(['scenario' => BookModel::SCENARIO_ADD_FORM]);
 	    if($getModel->load(['page' => $get['page'], 'PerPage' => $get['per-page']], '') && $getModel->validate()){
-		    $provider = $model->findBooks();
+		    $provider = $model->readBooks();
 		    return $this->render('books', compact('model', 'provider'));
 	    }else{
 	    	throw new BadRequestHttpException('Ошибка запроса!');
@@ -92,7 +93,7 @@ class SiteController extends Controller
 			$addModel = new AuthorModel(['scenario' => AuthorModel::SCENARIO_ADD_FORM]);
 			$updateModel = new AuthorModel(['scenario' => AuthorModel::SCENARIO_UPDATE_FORM]);
 			if($updateModel->load(['slug' => $slug], '')){
-				$author = $updateModel->findAuthor();
+				$author = $updateModel->readAuthor();
 				if(empty($author)){
 					throw new NotFoundHttpException('Страница не найдена!');
 				}
@@ -115,7 +116,7 @@ class SiteController extends Controller
 		$getModel = new PageModel();
 		$model = new AuthorModel(['scenario' => AuthorModel::SCENARIO_ADD_FORM]);
 		if($getModel->load(['page' => $get['page'], 'PerPage' => $get['per-page']], '') && $getModel->validate()){
-			$provider = $model->findAuthors();
+			$provider = $model->readAuthors();
 			return $this->render('authors', compact('model', 'provider'));
 		}else{
 			throw new BadRequestHttpException('Ошибка запроса!');
@@ -127,6 +128,7 @@ class SiteController extends Controller
 	 * @return string|Response
 	 * @throws BadRequestHttpException
 	 * @throws NotFoundHttpException
+	 * @throws \yii\base\InvalidConfigException
 	 */
 	public function actionLibrary($slug)
 	{
@@ -136,16 +138,15 @@ class SiteController extends Controller
 		$getModel = new SlugModel();
 		if($getModel->load(['slug' => $slug], '') && $getModel->validate()){
 			$checkModel = new LibraryModel(['scenario' => LibraryModel::SCENARIO_CHECK_SLUG]);
-			$addModel = new LibraryModel(['scenario' => LibraryModel::SCENARIO_ADD_FORM]);
 			$updateModel = new LibraryModel(['scenario' => LibraryModel::SCENARIO_UPDATE_FORM]);
 			if($checkModel->load(['slug' => $slug], '')){
-				$library = $checkModel->findLibrary();
+				$library = $checkModel->readLibrary();
 				$book = $checkModel->findBooks();
 				$author = $checkModel->findAuthors();
 				if(empty($library)){
 					throw new NotFoundHttpException('Страница не найдена!');
 				}
-				return $this->render('library',compact('updateModel', 'addModel', 'library', 'book', 'author'));
+				return $this->render('library',compact('updateModel','library', 'book', 'author'));
 			}
 		}
 		throw new BadRequestHttpException('Ошибка запроса');
@@ -164,10 +165,8 @@ class SiteController extends Controller
 		$getModel = new PageModel();
 		$model = new LibraryModel(['scenario' => LibraryModel::SCENARIO_ADD_FORM]);
 		if($getModel->load(['page' => $get['page'], 'PerPage' => $get['per-page']], '') && $getModel->validate()){
-			$provider = $model->findLibrarys();
-			$book = $model->findBooks();
-			$author = $model->findAuthors();
-			return $this->render('librarys', compact('model', 'provider', 'book', 'author'));
+			$provider = $model->readLibrarys();
+			return $this->render('librarys', compact('model', 'provider'));
 		}else{
 			throw new BadRequestHttpException('Ошибка запроса!');
 		}

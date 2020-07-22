@@ -29,25 +29,6 @@ class DocController extends Controller
 	 */
 	public function actionIndex()
     {
-    	$action = 'findBook';
-    	$model = 'admin\models\BookModel';
-    	//$findModel = '';
-    	//$findModel = new $model();
-    	var_dump(class_exists($model));
-    	//$findModel = (new $models());
-	    //$asd = yii::$app->aliases();
-	    //var_dump($asd); die;
-    	//$asd = new ();
-    	//var_dump($asd);
-    	/*$model = 'asd';
-    	$data = [
-    		'model' => [
-    		    'name' => 'asasd',
-			    'subname' => 'asd',
-		    ],
-	    ];
-    	//$d = ArrayHelper::map($data, 'model', 'model');
-    	var_dump($d);*/
         return $this->render('index');
     }
     

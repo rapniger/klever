@@ -61,8 +61,8 @@ return [
 			    'logout' => 'site/logout',
 			    'profile' => 'site/profile',
 			    'validate' => 'site/validate',
-			    'book' => 'book/index',
-			    'author' => 'author/index',
+			    'librarys' => 'site/librarys',
+			    'librarys/<page>' => 'site/librarys',
 		    ],
 	    ],
 	    'urlManagerAPI' => [
